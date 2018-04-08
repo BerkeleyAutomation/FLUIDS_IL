@@ -5,10 +5,11 @@ import time
 import numpy as np
 import numpy.linalg as LA
 import json
-from il_fluids.core import Trainer
+from il_fluids.core import Learner
 from il_fluids.core  import Plotter
 
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import LinearSVC
 
 ###A script to test behavior cloning 
 
@@ -23,26 +24,32 @@ with open('configs/il_velocity_config.json') as json_data_file:
 
 file_path =  il_config['file_path'] + il_config['experiment_name']
 
-il_config['model'] = DecisionTreeClassifier(max_depth = 4)
-
 #Trainer class
-trainer = Trainer(fluids_config,il_config)
-
-#Plotter class
-plotter = Plotter(file_path)
-stats = []
 
 
-for i in range(il_config['num_iters']):
-	#Collect demonstrations 
-    trainer.collect_supervisor_rollouts()
-    #update model 
-    trainer.train_model()
-    #Evaluate Policy 
-    stats.append(trainer.get_stats())
 
-#Save plots
-plotter.save_plots(stats)
+#Params To Search Over 
+params =  [1,2,4,5,10,None]
+ 
+
+for param in params:
+	model = DecisionTreeClassifier(max_depth = param)
+	learner = Learner(file_path,model=model)
+
+	learner.load_data()
+	learner.train_model()
+
+	stats = {}
+
+	
+	stats['train_error']= learner.get_train_error_classification()
+
+	stats['test_error'] = learner.get_test_error_classification()
+	stats['max_depth'] = param
+
+	print(stats)
+
+
 
 
 

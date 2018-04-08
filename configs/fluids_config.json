@@ -2,7 +2,7 @@
 
     "environment":{
         "state": "four_way_intersection",
-        "visualize": false,
+        "visualize": true,
         "max_time":500
     },
 

@@ -9,17 +9,23 @@ from sklearn.tree import DecisionTreeRegressor
 from numpy.random import uniform
 import numpy.linalg as LA
 from gym_urbandriving.actions import VelocityAction
-
+from il_fluids.utils.losses import loss
 
 ###Class created to store relevant information for learning at scale
 
 class Learner():
 
-	def __init__(self,file_path):
+	def __init__(self,il_config):
 
 		self.data = []
 		self.rollout_info = {}
-		self.file_path = file_path
+		self.file_path = il_config['file_path'] + il_config['experiment_name']
+
+		self.model = il_config['model']
+
+		self.il_config = il_config
+
+
 
 	def load_data(self):
 		"""
@@ -34,9 +40,10 @@ class Learner():
 
 		paths = glob.glob(self.file_path+'/rollout_*')
 		self.rollouts = []
-		
+
+
 		for path in paths:
-			data_point = np.load(path)
+			data_point = np.load(path,encoding='latin1')
 			self.rollouts.append(data_point)
 
 		return paths
@@ -55,7 +62,8 @@ class Learner():
 		self.Y_test = []
 
 		#We are currently using a decision tree, however this can be quite modular
-		self.model = DecisionTreeRegressor()
+		if self.model == None:
+			self.model = DecisionTreeRegressor()
 
 
 		for rollout in self.rollouts:
@@ -69,6 +77,7 @@ class Learner():
 
 				observations = datum['state']
 				actions = datum['action']
+				print(actions)
 
 				for i in range(len(actions)):
 
@@ -86,29 +95,6 @@ class Learner():
 
 		self.model.fit(self.X_train,self.Y_train) 
 		
-
-	def unmake_action(self,action):
-		"""
-        Converst the output of the model to an action usable by the simulator
-
-        Parameters
-        ----------
-        action: numpy array
-
-        Returns
-        ------------
-        list of each action for the agent
-        """
-
-		action = list(action.reshape(self.num_cars,2))
-
-		for i in range(len(action)):
-			#odd hack, will fix 
-			if action[i][1] < 0.0: 
-				action[i][1] = 0.00001
-
-
-		return action
 
 
 	def get_train_error(self):
@@ -129,7 +115,7 @@ class Learner():
 
 			y_ = self.model.predict(x)
 
-			err = LA.norm(y-y_)
+			err = loss(self.il_config['loss_type'],y,y_[0])
 
 			avg_err += err
 
@@ -158,7 +144,7 @@ class Learner():
 					_ar = robot_action[i].get_value()
 					_sr = sup_action[i].get_value()
 
-					err = LA.norm(_ar-_sr)
+					err = loss(self.il_config['loss_type'],_ar,_sr)
 
 					avg_err += err
 					count += 1.0
@@ -166,7 +152,45 @@ class Learner():
 
 		return avg_err/count
 
+	def get_robot_reward(self,evaluations):
+		"""
+        Report the on-policy surrogate loss to measure covariate shift
 
+        Returns
+        ------------
+        float specifying L2 error
+        """
+
+		count = 0.0
+		avg_reward = 0.0
+
+		for rollout in evaluations:
+			for datum in rollout:
+				avg_reward += datum['reward']
+				count += 1.0
+
+
+		return avg_reward/count
+
+	def get_supervisor_reward(self):
+		"""
+        Report the on-policy surrogate loss to measure covariate shift
+
+        Returns
+        ------------
+        float specifying L2 error
+        """
+
+		count = 0.0
+		avg_reward = 0.0
+
+		for rollout in self.rollouts:
+			for datum in rollout[0]:
+				avg_reward += datum['reward']
+				count += 1.0
+
+
+		return avg_reward/count
 
 	def get_test_error(self):
 		"""
@@ -184,10 +208,10 @@ class Learner():
 
 			x = np.array([self.X_test[i]])
 			y = self.Y_test[i]
-
+			
 			y_ = self.model.predict(x)
-
-			err = LA.norm(y-y_)
+	
+			err = err = loss(self.il_config['loss_type'],y,y_[0])
 
 			avg_err += err
 
@@ -195,7 +219,6 @@ class Learner():
 			return avg_err
 
 		return avg_err/float(len(self.X_test))
-
 
 
 
@@ -217,6 +240,7 @@ class Learner():
 
 			x = np.array([s_])
 			action = self.model.predict(x)
+
 			
 			actions.append(VelocityAction(action[0]))
 

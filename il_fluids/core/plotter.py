@@ -37,48 +37,57 @@ class Plotter():
 			Contains the measured statistics 
 		'''
 
+		raw_data = {}
+		raw_data['reward_sup'] = []
+		raw_data['reward_robot'] = []
+		raw_data['loss_sup'] = []
+		raw_data['loss_robot'] = []
+		raw_data['train_sup'] = []
+
+
 		reward_sup = []
 		reward_robot = []
 
 		loss_sup = []
 		loss_robot = []
 
-		loss_sup = []
 		train_sup = []
 
 		for i in range(len(stats)):
 
-			# reward_sup.append(stats[i]['reward_sup'])
-			# reward_robot.append(stats[i]['reward_robot'])
+			raw_data['reward_sup'].append(stats[i]['reward_sup'])
+			raw_data['reward_robot'].append(stats[i]['reward_robot'])
 
-			loss_sup.append(stats[i]['loss_sup'])
-			loss_robot.append(stats[i]['loss_robot'])
+			raw_data['loss_sup'].append(stats[i]['loss_sup'])
+			raw_data['loss_robot'].append(stats[i]['loss_robot'])
 
 			
-			train_sup.append(stats[i]['train_sup'])
+			raw_data['train_sup'].append(stats[i]['train_sup'])
 
 
 
-		# plt.plot(reward_sup,label = 'R.S.' )
-		# plt.plot(reward_robot,label = 'R.R.' )
-		# plt.legend()
+		plt.plot(raw_data['reward_sup'],label = 'R.S.' )
+		plt.plot(raw_data['reward_robot'],label = 'R.R.' )
+		plt.legend()
 
-		# plt.savefig(self.file_path+'/plots/reward.png')
-		# plt.clf()
+		plt.savefig(self.file_path+'/plots/reward.png')
+		plt.clf()
 
-		plt.plot(loss_sup,label = 'L.S.' )
-		plt.plot(loss_robot,label = 'L.R.' )
+		plt.plot(raw_data['loss_sup'],label = 'L.S.' )
+		plt.plot(raw_data['loss_robot'],label = 'L.R.' )
 		plt.legend()
 
 		plt.savefig(self.file_path+'/plots/covariate_shift.png')
 		plt.clf()
 
-		plt.plot(loss_sup,label = 'L.S.' )
-		plt.plot(train_sup,label = 'T.S.' )
+		plt.plot(raw_data['loss_sup'],label = 'L.S.' )
+		plt.plot(raw_data['train_sup'],label = 'T.S.' )
 		plt.legend()
 
 		plt.savefig(self.file_path+'/plots/generalization.png')
 		plt.clf()
+
+		np.save(self.file_path+'/plots/raw_data',raw_data)
 
 
 

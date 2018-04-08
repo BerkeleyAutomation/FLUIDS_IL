@@ -10,6 +10,8 @@ from gym_urbandriving.agents import VelocitySupervisor
 from il_fluids.utils import DataLogger
 from il_fluids.core import Learner
 from il_fluids.distributions import InitialState
+from il_fluids.data_protocols import BehaviorCloning
+from il_fluids.core  import Plotter
 
 
 class Trainer:
@@ -19,11 +21,19 @@ class Trainer:
         self.fluids_config = fluids_config
         self.il_config = il_config
 
-        file_path =  il_config['file_path'] + il_config['experiment_name']
-        self.d_logger = DataLogger(file_path)
-        self.il_learn = Learner(file_path)
+        self.file_path =  il_config['file_path'] + il_config['experiment_name']
+
+        self.d_logger = DataLogger(self.file_path)
+
+        self.il_learn = Learner(il_config)
 
         self.initial_state = InitialState(fluids_config,il_config)
+
+        self.protocol = BehaviorCloning()
+
+
+    def set_data_protocol(self,protocol):
+        self.protocol = protocol
 
 
     def train_model(self):
@@ -33,7 +43,7 @@ class Trainer:
 
         self.il_learn.load_data()
         self.il_learn.train_model()
-
+        self.protocol.update()
 
     def get_stats(self):
         """
@@ -47,13 +57,32 @@ class Trainer:
         stats = {}
         stats['train_sup'] = self.il_learn.get_train_error()
         stats['loss_sup']  = self.il_learn.get_test_error()
-        #stats['reward_sup'] = self.success_rate
+        stats['reward_sup'] = self.il_learn.get_supervisor_reward()
 
-        loss_robot = self.evaluate_policy()
+        loss_robot,reward = self.evaluate_policy()
         stats['loss_robot'] = loss_robot
-        #stats['reward_robot'] = success_rate
+        stats['reward_robot'] = reward
 
         return stats
+
+
+    def train_robot(self):
+
+        #Plotter class
+        plotter = Plotter(self.file_path)
+        stats = []
+
+
+        for i in range(self.il_config['num_iters']):
+            #Collect demonstrations 
+            self.collect_supervisor_rollouts()
+            #update model 
+            self.train_model()
+            #Evaluate Policy 
+            stats.append(self.get_stats())
+            #Save plots
+            plotter.save_plots(stats)
+       
 
 
     def evaluate_policy(self):
@@ -68,9 +97,11 @@ class Trainer:
 
         evaluations = self.collect_policy_rollouts()
 
-        loss_robot = self.il_learn.get_cs(evaluations)
 
-        return loss_robot
+        loss_robot = self.il_learn.get_cs(evaluations)
+        reward = self.il_learn.get_robot_reward(evaluations)
+
+        return loss_robot,reward
 
 
 
@@ -89,21 +120,36 @@ class Trainer:
         self.supervisors = self.initial_state.create_supervisors()
 
         state = env.get_current_state()
+
+        curr_observations = env.get_initial_observations()
         # Simulation loop
         for i in range(self.il_config['time_horizon']):
 
             actions = []
-            for supervisor in self.supervisors:
-                action = supervisor.eval_policy(state)
+            sup_actions = []
+            for i in range(len(self.supervisors)):
+
+                supervisor = self.supervisors[i]
+                sup_action = supervisor.eval_policy(state)
+
+                if self.protocol.use_robot_action:
+                    robot_action = self.il_learn.eval_policy(curr_observations[i])
+                    action = self.protocol.get_action(robot_action = robot_action,supervisor_action = sup_action)
+                else:
+                    action = self.protocol.get_action(robot_action = None,supervisor_action = sup_action)
+
                 actions.append(action)
+                sup_actions.append(sup_action)
 
             sar = {}
 
-            observations, reward, done, info_dict = env._step(actions)
+            next_observations, reward, done, info_dict = env._step(actions)
 
-            sar['state'] = observations
+            sar['state'] = curr_observations
             sar['reward'] = reward
-            sar['action'] = actions
+            sar['action'] = sup_actions
+
+            curr_observations = next_observations
 
             state = env.get_current_state()
 
@@ -174,8 +220,6 @@ class Trainer:
  
             evaluations.append(rollout)
             
-      
-
         return evaluations
 
     def collect_supervisor_rollouts(self):
@@ -190,10 +234,7 @@ class Trainer:
 
         for i in range(self.il_config['num_sup_rollouts']):
             rollout = self.rollout_supervisor()
-        
+            self.d_logger.save_rollout(rollout)
 
-        self.d_logger.save_rollout(rollout)
-
-      
         return
 
