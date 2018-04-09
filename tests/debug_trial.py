@@ -25,23 +25,31 @@ with open('configs/il_debug_config.json') as json_data_file:
 il_config['model'] = DecisionTreeClassifier(max_depth = 4)
 
 
-###RUN BEHAVIOR CLONING############
-il_config['experiment_name']  = il_config['trial_name']+ '_behavior_cloning'
+# ###RUN BEHAVIOR CLONING############
+# il_config['experiment_name']  = il_config['trial_name']+ '_behavior_cloning'
+
+# trainer = Trainer(fluids_config,il_config)
+
+# trainer.train_robot()
+
+
+# ###RUN NOISE INJECTION############
+# il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection'
+
+# trainer = Trainer(fluids_config,il_config)
+
+# trainer.set_data_protocol(DART())
+
+# trainer.train_robot()
+
+###RUN DAGGER############
+il_config['experiment_name'] = il_config['trial_name'] + '_dagger'
 
 trainer = Trainer(fluids_config,il_config)
 
-trainer.train_robot()
-
-
-###RUN NOISE INJECTION############
-il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection'
-
-trainer = Trainer(fluids_config,il_config)
-
-trainer.set_data_protocol(DART())
+trainer.set_data_protocol(Dagger())
 
 trainer.train_robot()
-
 
 
 

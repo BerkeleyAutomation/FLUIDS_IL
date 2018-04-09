@@ -127,14 +127,15 @@ class Trainer:
 
             actions = []
             sup_actions = []
+            if self.protocol.use_robot_action:
+                robot_actions = self.il_learn.eval_policy(curr_observations)
             for i in range(len(self.supervisors)):
 
                 supervisor = self.supervisors[i]
                 sup_action = supervisor.eval_policy(state)
 
                 if self.protocol.use_robot_action:
-                    robot_action = self.il_learn.eval_policy(curr_observations[i])
-                    action = self.protocol.get_action(robot_action = robot_action,supervisor_action = sup_action)
+                    action = self.protocol.get_action(robot_action = robot_actions[i],supervisor_action = sup_action)
                 else:
                     action = self.protocol.get_action(robot_action = None,supervisor_action = sup_action)
 
