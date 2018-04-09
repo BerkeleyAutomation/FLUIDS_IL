@@ -18,12 +18,11 @@ with open('configs/fluids_config.json') as json_data_file:
     fluids_config = json.load(json_data_file)
 
 #Config for Imitation Learning Experiment 
-with open('configs/il_velocity_config.json') as json_data_file:
+with open('configs/il_covariate_config.json') as json_data_file:
     il_config = json.load(json_data_file)
 
 
-file_path =  il_config['file_path'] + il_config['experiment_name']
-
+il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection'
 #Trainer class
 
 
@@ -33,8 +32,8 @@ params =  [1,2,4,5,10,None]
  
 
 for param in params:
-	model = DecisionTreeClassifier(max_depth = param)
-	learner = Learner(file_path,model=model)
+	il_config['model'] = DecisionTreeClassifier(max_depth = param)
+	learner = Learner(il_config)
 
 	learner.load_data()
 	learner.train_model()
@@ -42,9 +41,9 @@ for param in params:
 	stats = {}
 
 	
-	stats['train_error']= learner.get_train_error_classification()
+	stats['train_error']= learner.get_train_error()
 
-	stats['test_error'] = learner.get_test_error_classification()
+	stats['test_error'] = learner.get_test_error()
 	stats['max_depth'] = param
 
 	print(stats)

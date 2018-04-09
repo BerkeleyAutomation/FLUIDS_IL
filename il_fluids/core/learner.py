@@ -10,6 +10,7 @@ from numpy.random import uniform
 import numpy.linalg as LA
 from gym_urbandriving.actions import VelocityAction
 from il_fluids.utils.losses import loss
+import _pickle as pickle
 
 ###Class created to store relevant information for learning at scale
 
@@ -24,6 +25,7 @@ class Learner():
 		self.model = il_config['model']
 
 		self.il_config = il_config
+		self.iter_count = 0
 
 
 
@@ -77,7 +79,6 @@ class Learner():
 
 				observations = datum['state']
 				actions = datum['action']
-				print(actions)
 
 				for i in range(len(actions)):
 
@@ -94,6 +95,14 @@ class Learner():
 
 
 		self.model.fit(self.X_train,self.Y_train) 
+
+		if self.il_config['save_model']:
+			if not os.path.exists(self.file_path+'/model'):
+				os.makedirs(self.file_path+'/model')
+			model_file_path = self.file_path+'/model/model_iter_'+str(self.iter_count)
+			np.save(model_file_path,self.model)
+			#pickle.dump(self.model,open(model_file_path,'w'))
+			self.iter_count += 1
 		
 
 

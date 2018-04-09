@@ -34,7 +34,7 @@ trainer.train_robot()
 
 
 ###RUN NOISE INJECTION############
-il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection'
+il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection_debug'
 
 trainer = Trainer(fluids_config,il_config)
 

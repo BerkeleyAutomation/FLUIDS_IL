@@ -140,6 +140,7 @@ class Trainer:
 
                 actions.append(action)
                 sup_actions.append(sup_action)
+                
 
             sar = {}
 
