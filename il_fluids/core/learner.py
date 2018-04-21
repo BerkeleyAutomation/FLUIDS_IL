@@ -12,6 +12,8 @@ from gym_urbandriving.actions import VelocityAction
 from il_fluids.utils.losses import loss
 import _pickle as pickle
 
+from sklearn.preprocessing import StandardScaler
+
 ###Class created to store relevant information for learning at scale
 
 class Learner():
@@ -28,7 +30,13 @@ class Learner():
 		self.iter_count = 0
 
 
+	def standardize(self):
 
+		self.ss = StandardScaler()
+		self.ss.fit(self.X_train)
+
+		self.ss.transform(self.X_train)
+		self.ss.transform(self.X_test)
 	def load_data(self):
 		"""
 		Loads the data from the specified path 
@@ -93,7 +101,7 @@ class Learner():
 						self.X_test.append(s_)
 						self.Y_test.append(a_)
 
-
+		#self.standardize()
 		self.model.fit(self.X_train,self.Y_train) 
 
 		if self.il_config['save_model']:

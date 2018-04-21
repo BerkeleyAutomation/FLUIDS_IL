@@ -22,10 +22,8 @@ with open('configs/il_covariate_config.json') as json_data_file:
     il_config = json.load(json_data_file)
 
 
-il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection'
+il_config['experiment_name'] = il_config['trial_name'] + '_behavior_cloning'
 #Trainer class
-
-
 
 #Params To Search Over 
 params =  [1,2,4,5,10,None]
