@@ -9,5 +9,6 @@ setup(name='il_fluids',
                         "numpy",
                         "scikit-image", 
                         "opencv-python",
-                        "ipython"]
+                        "ipython",
+                        "gym-urbandriving"]
 )
