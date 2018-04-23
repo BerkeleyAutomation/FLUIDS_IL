@@ -25,8 +25,6 @@ fluids_config['environment']['visualize'] = False
 il_config['time_horizon'] = 5
 ###### SELECT MODEL #################
 
-
-
 trainer = Trainer(fluids_config,il_config)
 
 rollout = trainer.rollout_supervisor()
