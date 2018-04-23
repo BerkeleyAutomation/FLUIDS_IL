@@ -8,7 +8,6 @@ setup(name='il_fluids',
                         "sklearn",
                         "numpy",
                         "scikit-image", 
-                        "opencv-python",
                         "ipython",
                         "gym-urbandriving"]
 )

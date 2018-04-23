@@ -21,3 +21,5 @@ def loss(loss_name,value_1,value_2):
 		return indicator(value_1,value_2)
 	elif loss_name == "euclidean":
 		return euclidean(value_1,value_2)
+	else:
+		raise Exception('Loss function not supported')

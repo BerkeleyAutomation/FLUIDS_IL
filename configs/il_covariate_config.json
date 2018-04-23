@@ -10,5 +10,6 @@
     "min_cars":2,
     "max_cars":6,
     "loss_type":"indicator",
-    "save_model":false
+    "save_model":false,
+    "model":"none"
 }

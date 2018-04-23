@@ -1,6 +1,3 @@
-from gym_urbandriving.state.state import PositionState
-from gym_urbandriving.assets import Terrain, Lane, Street, Sidewalk,\
-    Pedestrian, Car, TrafficLight
 import numpy as np
 import IPython
 import os
@@ -37,6 +34,7 @@ class Learner():
 
 		self.ss.transform(self.X_train)
 		self.ss.transform(self.X_test)
+
 	def load_data(self):
 		"""
 		Loads the data from the specified path 
@@ -72,7 +70,7 @@ class Learner():
 		self.Y_test = []
 
 		#We are currently using a decision tree, however this can be quite modular
-		if self.model == None:
+		if self.model == "none":
 			self.model = DecisionTreeRegressor()
 
 
@@ -228,7 +226,7 @@ class Learner():
 			
 			y_ = self.model.predict(x)
 	
-			err = err = loss(self.il_config['loss_type'],y,y_[0])
+			err = loss(self.il_config['loss_type'],y,y_[0])
 
 			avg_err += err
 
