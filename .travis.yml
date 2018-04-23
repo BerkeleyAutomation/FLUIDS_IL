@@ -11,3 +11,4 @@ script:
   - python tests/test_losss.py
   - python tests/test_initial_state.py
   - python tests/test_data_saves_correctly.py 
+  - python tests/test_model_trains_correctly.py
