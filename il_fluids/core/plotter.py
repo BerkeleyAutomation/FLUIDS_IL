@@ -8,7 +8,9 @@ import glob
 from sklearn.tree import DecisionTreeRegressor
 from numpy.random import uniform
 import numpy.linalg as LA
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib import pyplot as plt
 
 plt.style.use('fivethirtyeight')
 
@@ -56,16 +58,17 @@ class Plotter():
 		for i in range(len(stats)):
 
 			raw_data['reward_sup'].append(stats[i]['reward_sup'])
-			raw_data['reward_robot'].append(stats[i]['reward_robot'])
+			#raw_data['reward_robot'].append(stats[i]['reward_robot'])
 
 			raw_data['loss_sup'].append(stats[i]['loss_sup'])
-			raw_data['loss_robot'].append(stats[i]['loss_robot'])
+			#raw_data['loss_robot'].append(stats[i]['loss_robot'])
 
 			
 			raw_data['train_sup'].append(stats[i]['train_sup'])
 
-
-
+		np.save(self.file_path+'/plots/raw_data',raw_data)
+		
+		
 		plt.plot(raw_data['reward_sup'],label = 'R.S.' )
 		plt.plot(raw_data['reward_robot'],label = 'R.R.' )
 		plt.legend()
@@ -88,7 +91,7 @@ class Plotter():
 		plt.clf()
 
 		np.save(self.file_path+'/plots/raw_data',raw_data)
-
+		
 
 
 

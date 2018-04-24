@@ -26,21 +26,21 @@ il_config['model'] = DecisionTreeClassifier(max_depth = 4)
 
 
 # ###RUN BEHAVIOR CLONING############
-# il_config['experiment_name']  = il_config['trial_name']+ '_behavior_cloning'
+il_config['experiment_name']  = il_config['trial_name']+ '_behavior_cloning'
 
-# trainer = Trainer(fluids_config,il_config)
+trainer = Trainer(fluids_config,il_config)
 
-# trainer.train_robot()
+trainer.train_robot()
 
 
-# ###RUN NOISE INJECTION############
-# il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection_debug'
+###RUN NOISE INJECTION############
+il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection'
 
-# trainer = Trainer(fluids_config,il_config)
+trainer = Trainer(fluids_config,il_config)
 
-# trainer.set_data_protocol(DART())
+trainer.set_data_protocol(DART())
 
-# trainer.train_robot()
+trainer.train_robot()
 
 ###RUN DAgger############
 il_config['experiment_name'] = il_config['trial_name'] + '_dagger'

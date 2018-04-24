@@ -21,7 +21,7 @@ with open('configs/fluids_config.json') as json_data_file:
 with open('configs/il_covariate_config.json') as json_data_file:
     il_config = json.load(json_data_file)
 
-fluids_config['environment']['visualize'] = False
+fluids_config['environment']['visualize'] = True
 
 ###### SELECT PARAMETER  #################
 il_config['time_horizon'] = 5

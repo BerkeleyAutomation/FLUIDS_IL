@@ -63,6 +63,8 @@ class Trainer:
         stats['loss_robot'] = loss_robot
         stats['reward_robot'] = reward
 
+
+
         return stats
 
 
