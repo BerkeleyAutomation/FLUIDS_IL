@@ -11,5 +11,6 @@
     "max_cars":6,
     "loss_type":"indicator",
     "save_model":false,
-    "model":"none"
+    "model":"none",
+    "load_tracked_state":false
 }

@@ -15,3 +15,4 @@ script:
   - python tests/test_model_loss.py
   - python tests/test_covariate_shift.py 
   - python tests/test_supervisor_variance.py
+  - python tests/test_tracker.py

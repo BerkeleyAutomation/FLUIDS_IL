@@ -12,7 +12,7 @@ from il_fluids.core import Learner
 from il_fluids.distributions import InitialState
 from il_fluids.data_protocols import BehaviorCloning
 from il_fluids.core  import Plotter
-from il_fluids.utils.tracker import Tracker
+
 
 
 class Trainer:
@@ -35,6 +35,9 @@ class Trainer:
 
     def set_data_protocol(self,protocol):
         self.protocol = protocol
+
+    def set_tracker(self,tracker):
+        self.Tracker = tracker
 
 
     def train_model(self):
@@ -124,9 +127,15 @@ class Trainer:
         
 
         state = env.get_current_state()
-        # tracker = Tracker(state,self.il_config)
 
-        # env.current_state = tracker.load_initial_state()
+        if self.Tracker: 
+
+            tracker = self.Tracker(state,self.il_config)
+
+            if tracker.load_state:
+
+                env.current_state = tracker.load_initial_state()
+
 
         curr_observations = env.get_initial_observations()
         # Simulation loop
@@ -150,7 +159,9 @@ class Trainer:
 
                 actions.append(action)
                 sup_actions.append(sup_action)
-                #tracker.catch_bug(state,i,sup_action)
+
+                if self.Tracker:
+                    tracker.catch_bug(state,i,sup_action)
 
             sar = {}
 
