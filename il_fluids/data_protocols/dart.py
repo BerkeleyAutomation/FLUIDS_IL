@@ -6,7 +6,7 @@ class DART(DCP):
 
 	def __init__(self):
 
-		self.noise = 0.3
+		self.noise = 0.1
 		self.use_robot_action = False
 
 	def get_action(self,robot_action = None,supervisor_action = None):

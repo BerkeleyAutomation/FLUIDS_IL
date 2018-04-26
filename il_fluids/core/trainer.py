@@ -124,9 +124,9 @@ class Trainer:
         
 
         state = env.get_current_state()
-        tracker = Tracker(state,self.il_config)
+        # tracker = Tracker(state,self.il_config)
 
-        env.current_state = tracker.load_initial_state()
+        # env.current_state = tracker.load_initial_state()
 
         curr_observations = env.get_initial_observations()
         # Simulation loop
@@ -137,6 +137,7 @@ class Trainer:
             if self.protocol.use_robot_action:
                 robot_actions = self.il_learn.eval_policy(curr_observations)
             for i in range(len(self.supervisors)):
+
 
                 supervisor = self.supervisors[i]
                 sup_action = supervisor.eval_policy(state)
@@ -158,6 +159,7 @@ class Trainer:
             sar['state'] = curr_observations
             sar['reward'] = reward
             sar['action'] = sup_actions
+            sar['noise_action'] = actions
 
             curr_observations = next_observations
 

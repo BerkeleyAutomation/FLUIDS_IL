@@ -23,12 +23,12 @@ with open('configs/il_covariate_config.json') as json_data_file:
     il_config = json.load(json_data_file)
 
 ###### SELECT MODEL #################
-il_config['model'] = DecisionTreeClassifier(max_depth = 40)
+il_config['model'] = DecisionTreeClassifier(max_depth = 10)
 
-fluids_config['environment']['visualize'] = True
+fluids_config['environment']['visualize'] = False
 
 # ###RUN BEHAVIOR CLONING############
-il_config['experiment_name']  = il_config['trial_name'] + "_noise_injection_hail_mary_for_speed"
+il_config['experiment_name']  = il_config['trial_name'] + "_low_noise_injection"
 
 trainer = Trainer(fluids_config,il_config)
 
