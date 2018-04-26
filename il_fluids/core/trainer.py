@@ -31,6 +31,7 @@ class Trainer:
         self.initial_state = InitialState(fluids_config,il_config)
 
         self.protocol = BehaviorCloning()
+        self.use_tracker = False
 
 
     def set_data_protocol(self,protocol):
@@ -38,7 +39,7 @@ class Trainer:
 
     def set_tracker(self,tracker):
         self.Tracker = tracker
-
+        self.use_tracker = True
 
     def train_model(self):
         """
@@ -128,12 +129,9 @@ class Trainer:
 
         state = env.get_current_state()
 
-        if self.Tracker: 
-
+        if self.use_tracker: 
             tracker = self.Tracker(state,self.il_config)
-
             if tracker.load_state:
-
                 env.current_state = tracker.load_initial_state()
 
 
@@ -160,7 +158,7 @@ class Trainer:
                 actions.append(action)
                 sup_actions.append(sup_action)
 
-                if self.Tracker:
+                if self.use_tracker:
                     tracker.catch_bug(state,i,sup_action)
 
             sar = {}

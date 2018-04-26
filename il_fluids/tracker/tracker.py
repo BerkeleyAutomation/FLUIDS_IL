@@ -39,7 +39,7 @@ class Tracker:
         if self.bug(state,num_agent,action):
            
             np.save(self.file_path+'/initial_state.npy',self.initial_state)
-            sys.exit('Found Bug')
+            sys.exit(0)
 
 
     def load_initial_state(self):
