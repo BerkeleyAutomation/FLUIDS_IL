@@ -7,6 +7,7 @@ import numpy.linalg as LA
 import json
 from il_fluids.core import Learner
 from il_fluids.core  import Plotter
+import IPython
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import LinearSVC
@@ -21,12 +22,10 @@ with open('configs/fluids_config.json') as json_data_file:
 with open('configs/il_covariate_config.json') as json_data_file:
     il_config = json.load(json_data_file)
 
-
-il_config['experiment_name'] = il_config['trial_name'] + '_behavior_cloning'
 #Trainer class
-
+il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection_hail_mary_for_speed'
 #Params To Search Over 
-params =  [1,2,4,5,10,None]
+params =  [10,15,20,25,30]
  
 
 for param in params:
@@ -46,6 +45,7 @@ for param in params:
 
 	print(stats)
 
+	
 
 
 

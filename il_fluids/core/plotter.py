@@ -58,10 +58,10 @@ class Plotter():
 		for i in range(len(stats)):
 
 			raw_data['reward_sup'].append(stats[i]['reward_sup'])
-			#raw_data['reward_robot'].append(stats[i]['reward_robot'])
+			raw_data['reward_robot'].append(stats[i]['reward_robot'])
 
 			raw_data['loss_sup'].append(stats[i]['loss_sup'])
-			#raw_data['loss_robot'].append(stats[i]['loss_robot'])
+			raw_data['loss_robot'].append(stats[i]['loss_robot'])
 
 			
 			raw_data['train_sup'].append(stats[i]['train_sup'])

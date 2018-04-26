@@ -9,7 +9,8 @@ from il_fluids.core import Trainer
 
 from sklearn.tree import DecisionTreeClassifier
 
-from il_fluids.data_protocols import *
+from il_fluids.utils import InspectSupervisor
+from il_fluids.data_protocols import DART
 
 ###A script to test behavior cloning 
 
@@ -22,34 +23,19 @@ with open('configs/il_covariate_config.json') as json_data_file:
     il_config = json.load(json_data_file)
 
 ###### SELECT MODEL #################
-il_config['model'] = DecisionTreeClassifier(max_depth = 4)
+il_config['model'] = DecisionTreeClassifier(max_depth = 40)
 
+fluids_config['environment']['visualize'] = True
 
 # ###RUN BEHAVIOR CLONING############
-il_config['experiment_name']  = il_config['trial_name']+ '_behavior_cloning'
-
-trainer = Trainer(fluids_config,il_config)
-
-trainer.train_robot()
-
-
-###RUN NOISE INJECTION############
-il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection'
+il_config['experiment_name']  = il_config['trial_name'] + "_noise_injection_hail_mary_for_speed"
 
 trainer = Trainer(fluids_config,il_config)
 
 trainer.set_data_protocol(DART())
-
 trainer.train_robot()
 
-###RUN DAgger############
-il_config['experiment_name'] = il_config['trial_name'] + '_dagger'
 
-trainer = Trainer(fluids_config,il_config)
-
-trainer.set_data_protocol(Dagger())
-
-trainer.train_robot()
 
 
 

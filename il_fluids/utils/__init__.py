@@ -1,1 +1,2 @@
 from il_fluids.utils.data_logger import DataLogger
+from il_fluids.utils.inspect_supervisor import InspectSupervisor

@@ -12,6 +12,7 @@ from il_fluids.core import Learner
 from il_fluids.distributions import InitialState
 from il_fluids.data_protocols import BehaviorCloning
 from il_fluids.core  import Plotter
+from il_fluids.utils.tracker import Tracker
 
 
 class Trainer:
@@ -120,8 +121,12 @@ class Trainer:
 
         env = self.initial_state.sample_state()
         self.supervisors = self.initial_state.create_supervisors()
+        
 
         state = env.get_current_state()
+        tracker = Tracker(state,self.il_config)
+
+        env.current_state = tracker.load_initial_state()
 
         curr_observations = env.get_initial_observations()
         # Simulation loop
@@ -136,14 +141,15 @@ class Trainer:
                 supervisor = self.supervisors[i]
                 sup_action = supervisor.eval_policy(state)
 
+
                 if self.protocol.use_robot_action:
                     action = self.protocol.get_action(robot_action = robot_actions[i],supervisor_action = sup_action)
                 else:
-                    action = self.protocol.get_action(robot_action = None,supervisor_action = sup_action)
+                    action = self.protocol.get_action(robot_action = None, supervisor_action = sup_action)
 
                 actions.append(action)
                 sup_actions.append(sup_action)
-                
+                #tracker.catch_bug(state,i,sup_action)
 
             sar = {}
 
