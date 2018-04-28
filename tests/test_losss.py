@@ -6,10 +6,7 @@ import numpy as np
 import numpy.linalg as LA
 from il_fluids.utils.losses import loss
 
-###A script to test behavior cloning 
-
-#Config for FLUIDS simulator
-
+###Tests the loss functions are correct
 
 value_1 = 1
 value_2 = 3

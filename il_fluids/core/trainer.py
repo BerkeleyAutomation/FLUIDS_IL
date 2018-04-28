@@ -61,10 +61,10 @@ class Trainer:
 
         stats = {}
         stats['train_sup'] = self.il_learn.get_train_error()
-        stats['loss_sup']  = self.il_learn.get_test_error()
+        stats['loss_sup'],stats['confusion_matrix_sup']  = self.il_learn.get_test_error()
         stats['reward_sup'] = self.il_learn.get_supervisor_reward()
 
-        loss_robot,reward = self.evaluate_policy()
+        loss_robot,reward,stats['confusion_matrix_robot'] = self.evaluate_policy()
         stats['loss_robot'] = loss_robot
         stats['reward_robot'] = reward
 
@@ -89,6 +89,18 @@ class Trainer:
             stats.append(self.get_stats())
             #Save plots
             plotter.save_plots(stats)
+
+    def rollout_robot(self):
+
+        #Plotter class
+        plotter = Plotter(self.file_path)
+        stats = []
+
+
+        for i in range(self.il_config['num_iters']):
+            self.train_model()
+            #Evaluate Policy 
+            self.collect_policy_rollouts()
        
 
 
@@ -105,10 +117,10 @@ class Trainer:
         evaluations = self.collect_policy_rollouts()
 
 
-        loss_robot = self.il_learn.get_cs(evaluations)
+        loss_robot,c_matrix = self.il_learn.get_cs(evaluations)
         reward = self.il_learn.get_robot_reward(evaluations)
 
-        return loss_robot,reward
+        return loss_robot,reward,c_matrix
 
 
 
@@ -159,7 +171,8 @@ class Trainer:
                 sup_actions.append(sup_action)
 
                 if self.use_tracker:
-                    tracker.catch_bug(state,i,sup_action)
+                    if not tracker.load_state:
+                        tracker.catch_bug(state,i,sup_action)
 
             sar = {}
 
@@ -204,9 +217,10 @@ class Trainer:
             actions = self.il_learn.eval_policy(observations)
 
             sup_actions = []
-            for supervisor in self.supervisors:
-                action = supervisor.eval_policy(state)
-                sup_actions.append(action)
+            if self.il_config['eval_surr_loss']:
+                for supervisor in self.supervisors:
+                    action = supervisor.eval_policy(state)
+                    sup_actions.append(action)
 
             sar = {}
 

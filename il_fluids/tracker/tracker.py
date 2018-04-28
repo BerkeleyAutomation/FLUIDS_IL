@@ -33,9 +33,6 @@ class Tracker:
 
     def catch_bug(self,state,num_agent,action):
 
-        key = str(num_agent)
-        action = action.get_value()
-
         if self.bug(state,num_agent,action):
            
             np.save(self.file_path+'/initial_state.npy',self.initial_state)

@@ -11,7 +11,7 @@ import numpy.linalg as LA
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
-
+from il_fluids.utils.confusion_matrix import create_matrix
 plt.style.use('fivethirtyeight')
 
 class Plotter():
@@ -28,6 +28,23 @@ class Plotter():
 		if not os.path.exists(self.file_path+'/plots'):
 			os.makedirs(self.file_path+'/plots')
 
+
+	def save_matrix(self,stats):
+		
+		stat = stats[-1]
+		_y = stat['confusion_matrix_sup']['robot']
+		y =  stat['confusion_matrix_sup']['supervisor']
+
+		filename = self.file_path+'/plots/sup_cm.png'
+		create_matrix(y,_y,filename)
+
+
+		_y = stat['confusion_matrix_robot']['robot']
+		y =  stat['confusion_matrix_robot']['supervisor']
+
+		filename = self.file_path+'/plots/robot_cm.png'
+		create_matrix(y,_y,filename)
+		plt.clf()
 
 	def save_plots(self,stats):
 		'''
@@ -66,8 +83,9 @@ class Plotter():
 			
 			raw_data['train_sup'].append(stats[i]['train_sup'])
 
-		np.save(self.file_path+'/plots/raw_data',raw_data)
-		
+
+		self.save_matrix(stats)
+
 		
 		plt.plot(raw_data['reward_sup'],label = 'R.S.' )
 		plt.plot(raw_data['reward_robot'],label = 'R.R.' )

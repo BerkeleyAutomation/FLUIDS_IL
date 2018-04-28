@@ -9,7 +9,7 @@ import json
 import glob
 from il_fluids.core import Trainer
 
-###A script to test behavior cloning 
+###Tests the loss functions are correct
 
 #Config for FLUIDS simulator
 with open('configs/fluids_config.json') as json_data_file:

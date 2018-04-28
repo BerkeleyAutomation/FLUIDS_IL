@@ -7,7 +7,8 @@ import numpy as np
 import numpy.linalg as LA
 import IPython
 import gym_urbandriving as fluids
-import tracker
+from il_fluids.tracker.tracker import Tracker
+
 
 def overrides(super_class):
     def overrider(method):
@@ -19,8 +20,9 @@ def overrides(super_class):
 
 class OscTracker(Tracker):
 
-    @overrides(Common)
+    @overrides(Tracker)
     def bug(self,state,num_agent,action):
+        thresh = 7
 
         key = str(num_agent)
         action = action.get_value()
@@ -33,7 +35,7 @@ class OscTracker(Tracker):
             self.num_changes[key] += 1
             self.prev_actions[key] = action
 
-            if self.num_changes[key] > self.thresh:
+            if self.num_changes[key] > thresh:
                 return True
 
         return False

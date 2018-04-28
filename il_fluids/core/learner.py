@@ -149,6 +149,10 @@ class Learner():
 		count = 0.0
 		avg_err = 0.0
 
+		confusion_matrix_data ={}
+		confusion_matrix_data['robot'] = []
+		confusion_matrix_data['supervisor'] = []
+
 		for rollout in evaluations:
 			for datum in rollout:
 
@@ -161,11 +165,14 @@ class Learner():
 
 					err = loss(self.il_config['loss_type'],_ar,_sr)
 
+					confusion_matrix_data['robot'].append(_ar)
+					confusion_matrix_data['supervisor'].append(_sr)
+
 					avg_err += err
 					count += 1.0
 
 
-		return avg_err/count
+		return avg_err/count,confusion_matrix_data
 
 	def get_robot_reward(self,evaluations):
 		"""
@@ -219,6 +226,10 @@ class Learner():
 
 		avg_err = 0.0
 
+		confusion_matrix_data = {}
+		confusion_matrix_data['robot'] = []
+		confusion_matrix_data['supervisor'] = []
+
 		for i in range(len(self.X_test)):
 
 			x = np.array([self.X_test[i]])
@@ -228,12 +239,15 @@ class Learner():
 	
 			err = loss(self.il_config['loss_type'],y,y_[0])
 
+			confusion_matrix_data['supervisor'].append(y)
+			confusion_matrix_data['robot'].append(y_[0])
+
 			avg_err += err
 
 		if len(self.X_test) == 0:
-			return avg_err
+			return avg_err,confusion_matrix_data
 
-		return avg_err/float(len(self.X_test))
+		return avg_err/float(len(self.X_test)),confusion_matrix_data
 
 
 

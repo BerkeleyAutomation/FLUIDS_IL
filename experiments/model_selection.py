@@ -18,14 +18,15 @@ from sklearn.svm import LinearSVC
 with open('configs/fluids_config.json') as json_data_file:
     fluids_config = json.load(json_data_file)
 
-#Config for Imitation Learning Experiment 
-with open('configs/il_covariate_config.json') as json_data_file:
+with open('configs/il_covariate_two_config.json') as json_data_file:
     il_config = json.load(json_data_file)
 
-#Trainer class
-il_config['experiment_name'] = il_config['trial_name'] + '_noise_injection_hail_mary_for_speed'
+
+# ###RUN BEHAVIOR CLONING############
+il_config['experiment_name']  = il_config['trial_name'] + "_10_noise_full"
+
 #Params To Search Over 
-params =  [10,15,20,25,30]
+params =  [5,6,7,8,9,10]
  
 
 for param in params:
@@ -40,7 +41,7 @@ for param in params:
 	
 	stats['train_error']= learner.get_train_error()
 
-	stats['test_error'] = learner.get_test_error()
+	stats['test_error'],_ = learner.get_test_error()
 	stats['max_depth'] = param
 
 	print(stats)
