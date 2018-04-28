@@ -33,6 +33,6 @@ trainer.collect_supervisor_rollouts()
 
 trainer.train_model()
 
-loss_robot,reward = trainer.evaluate_policy()
+loss_robot,reward,_ = trainer.evaluate_policy()
 
 assert (loss_robot >= 0.0)

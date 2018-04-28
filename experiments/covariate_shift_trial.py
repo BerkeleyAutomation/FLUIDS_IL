@@ -37,7 +37,7 @@ fluids_config['environment']['visualize'] = False
 # trainer.set_data_protocol(dcp)
 # trainer.train_robot()
 
-il_config['experiment_name']  = il_config['trial_name'] + "_10_noise_injection"
+il_config['experiment_name']  = il_config['trial_name'] + "_10_noise_double"
 
 trainer = Trainer(fluids_config,il_config)
 

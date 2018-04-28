@@ -34,7 +34,7 @@ trainer.collect_supervisor_rollouts()
 trainer.train_model()
 
 train_sup = trainer.il_learn.get_train_error()
-loss_sup = trainer.il_learn.get_test_error()
+loss_sup,_ = trainer.il_learn.get_test_error()
 
 assert (train_sup >= 0.0)
 assert (loss_sup >= 0.0)
