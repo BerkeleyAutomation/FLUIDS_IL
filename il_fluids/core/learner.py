@@ -6,6 +6,7 @@ from sklearn.tree import DecisionTreeRegressor
 from numpy.random import uniform
 import numpy.linalg as LA
 from gym_urbandriving.actions import VelocityAction
+from gym_urbandriving.actions import SteeringAction
 from il_fluids.utils.losses import loss
 import _pickle as pickle
 
@@ -15,11 +16,14 @@ from sklearn.preprocessing import StandardScaler
 
 class Learner():
 
-	def __init__(self,il_config):
+	def __init__(self,il_config,extension=None):
 
 		self.data = []
 		self.rollout_info = {}
-		self.file_path = il_config['file_path'] + il_config['experiment_name']
+		if extension:
+			self.file_path = il_config['file_path'] + il_config['experiment_name']+extension
+		else:
+			self.file_path = il_config['file_path'] + il_config['experiment_name']
 
 		self.model = il_config['model']
 
@@ -270,8 +274,11 @@ class Learner():
 			x = np.array([s_])
 			action = self.model.predict(x)
 
-			
-			actions.append(VelocityAction(action[0]))
+			if self.il_config['action'] == "steering":
+				action = action[0,:]
+				actions.append(SteeringAction(steering=action[0],acceleration=action[1]))
+			elif  self.il_config['action'] == "velocity":
+				actions.append(VelocityAction(action[0]))
 
 		return actions
 

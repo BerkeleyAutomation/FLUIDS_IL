@@ -25,7 +25,7 @@ with open('configs/il_covariate_two_config.json') as json_data_file:
 ###### SELECT MODEL #################
 il_config['model'] = DecisionTreeClassifier(max_depth = 10)
 
-fluids_config['environment']['visualize'] = False
+fluids_config['environment']['visualize'] = True
 
 # ###RUN BEHAVIOR CLONING############
 # il_config['experiment_name']  = il_config['trial_name'] + "_30_noise_injection"
@@ -37,7 +37,7 @@ fluids_config['environment']['visualize'] = False
 # trainer.set_data_protocol(dcp)
 # trainer.train_robot()
 
-il_config['experiment_name']  = il_config['trial_name'] + "_10_noise_double"
+il_config['experiment_name']  = il_config['trial_name'] + "_10_noise_neural"
 
 trainer = Trainer(fluids_config,il_config)
 

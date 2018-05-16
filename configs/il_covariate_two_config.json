@@ -1,0 +1,17 @@
+{   
+    "file_path":"data/",
+    "trial_name":"covariate_ff",
+    "experiment_name":"none",
+    "num_iters":4,
+    "num_sup_rollouts":50,
+    "num_policy_rollouts":10,
+    "time_horizon":100,
+    "supervisor": "VelocityNeuralSupervisor",
+    "min_cars":2,
+    "max_cars":6,
+    "loss_type":"indicator",
+    "save_model":true,
+    "model":"none",
+    "load_tracked_state":false,
+    "eval_surr_loss":true
+}

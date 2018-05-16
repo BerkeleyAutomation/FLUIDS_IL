@@ -48,7 +48,7 @@ class Trainer:
 
         self.il_learn.load_data()
         self.il_learn.train_model()
-        self.protocol.update()
+        self.protocol.update(self.il_learn)
 
     def get_stats(self):
         """
@@ -72,23 +72,42 @@ class Trainer:
 
         return stats
 
+    def reset_trial(self,extend):
+
+        file_path = self.il_config['file_path']+self.il_config['experiment_name'] + extend
+        self.plotter = Plotter(file_path,self.il_config)
+        self.d_logger = DataLogger(file_path)
+        self.il_learn = Learner(self.il_config,extend)
+
 
     def train_robot(self):
 
         #Plotter class
-        plotter = Plotter(self.file_path)
-        stats = []
+        plotter = Plotter(self.file_path,self.il_config)
+        
+        agg_stats = []
+        base_name = self.il_config['experiment_name']
+
+        for i in range(self.il_config['num_trials']):
+
+            self.reset_trial('/_'+str(i))
+            stats = []
+
+            for i in range(self.il_config['num_iters']):
+                #Collect demonstrations 
+                self.collect_supervisor_rollouts()
+                #update model 
+                self.train_model()
+                #Evaluate Policy 
+                stats.append(self.get_stats())
+                #Save plots
+                self.plotter.save_plots(stats)
+
+            self.reset_trial('/agg')
+            agg_stats.append(stats)
+            self.plotter.save_agg_plots(agg_stats)
 
 
-        for i in range(self.il_config['num_iters']):
-            #Collect demonstrations 
-            self.collect_supervisor_rollouts()
-            #update model 
-            self.train_model()
-            #Evaluate Policy 
-            stats.append(self.get_stats())
-            #Save plots
-            plotter.save_plots(stats)
 
     def rollout_robot(self):
 
@@ -136,7 +155,7 @@ class Trainer:
         rollout = []
 
         env = self.initial_state.sample_state()
-        self.supervisors = self.initial_state.create_supervisors()
+        self.supervisors = self.initial_state.create_supervisors(self.il_config['supervisor'])
         
 
         state = env.get_current_state()
@@ -205,7 +224,7 @@ class Trainer:
         agents = []
 
         env = self.initial_state.sample_state() 
-        self.supervisors = self.initial_state.create_supervisors()
+        self.supervisors = self.initial_state.create_supervisors(self.il_config['supervisor'])
 
         state = env.get_current_state()   
 
