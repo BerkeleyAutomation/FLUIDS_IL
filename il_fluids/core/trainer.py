@@ -61,12 +61,18 @@ class Trainer:
 
         stats = {}
         stats['train_sup'] = self.il_learn.get_train_error()
-        stats['loss_sup'],stats['confusion_matrix_sup']  = self.il_learn.get_test_error()
+        stats['loss_sup'],_  = self.il_learn.get_test_error()
         stats['reward_sup'] = self.il_learn.get_supervisor_reward()
 
-        loss_robot,reward,stats['confusion_matrix_robot'] = self.evaluate_policy()
+        loss_robot,reward,_ = self.evaluate_policy()
         stats['loss_robot'] = loss_robot
         stats['reward_robot'] = reward
+
+        if self.il_config['measure_est_stats']:
+            bias,variance,cov_matrix = self.il_learn.compute_bias_variance()
+            stats['bias'] = bias
+            stats['variance'] = variance
+            #stats['cov_matrix'] = cov_matrix
 
 
 

@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 from il_fluids.utils.confusion_matrix import create_matrix
+from copy import deepcopy
 plt.style.use('fivethirtyeight')
 
 class Plotter():
@@ -28,6 +29,14 @@ class Plotter():
 			self.il_config = il_config
 		if not os.path.exists(self.file_path+'/plots'):
 			os.makedirs(self.file_path+'/plots')
+
+		self.keys = {"reward_sup":[],
+					"reward_robot":[],
+					"loss_sup":[],
+					"loss_robot":[],
+					"train_sup":[],
+					"bias":[],
+					"variance":[]}
 
 	def update_file_path(self,file_path):
 
@@ -55,32 +64,11 @@ class Plotter():
 
 
 	def get_statistics(self,stats):
-		raw_data = {}
-		raw_data['reward_sup'] = []
-		raw_data['reward_robot'] = []
-		raw_data['loss_sup'] = []
-		raw_data['loss_robot'] = []
-		raw_data['train_sup'] = []
-
-
-		reward_sup = []
-		reward_robot = []
-
-		loss_sup = []
-		loss_robot = []
-
-		train_sup = []
+		raw_data = deepcopy(self.keys)
 
 		for i in range(len(stats)):
-
-			raw_data['reward_sup'].append(stats[i]['reward_sup'])
-			raw_data['reward_robot'].append(stats[i]['reward_robot'])
-
-			raw_data['loss_sup'].append(stats[i]['loss_sup'])
-			raw_data['loss_robot'].append(stats[i]['loss_robot'])
-
-			
-			raw_data['train_sup'].append(stats[i]['train_sup'])
+			for key in stats[i].keys():
+				raw_data[key] = stats[i][key]
 
 		return raw_data
 
@@ -128,44 +116,40 @@ class Plotter():
 		plt.savefig(self.file_path+'/plots/generalization.png')
 		plt.clf()
 
+		if self.il_config["measure_est_stats"]:
+			plt.plot(raw_data['bias'],label = 'L.S.' )
+			plt.legend()
+			plt.savefig(self.file_path+'/plots/bias.png')
+			plt.clf()
+
+			plt.plot(raw_data['variance'],label = 'L.S.' )
+			plt.legend()
+			plt.savefig(self.file_path+'/plots/variance.png')
+			plt.clf()
+			
+
 		np.save(self.file_path+'/plots/raw_data',raw_data)
 
 	def save_agg_plots(self,agg_stats):
 
-		raw_data = {}
-		raw_data_err = {}
-
-		raw_data['reward_sup'] = []
-		raw_data['reward_robot'] = []
-		raw_data['loss_sup'] = []
-		raw_data['loss_robot'] = []
-		raw_data['train_sup'] = []
-
-		raw_data_err['reward_sup'] = []
-		raw_data_err['reward_robot'] = []
-		raw_data_err['loss_sup'] = []
-		raw_data_err['loss_robot'] = []
-		raw_data_err['train_sup'] = []
+		raw_data = deepcopy(self.keys)
+		raw_data_err = deepcopy(self.keys)
 
 		num_point = float(len(agg_stats))
 		for i in range(self.il_config['num_iters']):
-			values = {}
-			values['reward_sup'] = []
-			values['reward_robot'] = []
-			values['loss_sup'] = []
-			values['loss_robot'] = []
-			values['train_sup'] = []
+			values = deepcopy(self.keys)
 
 			for stat in agg_stats:
-				for key in values.keys():
+				for key in stat[0].keys():
 					values[key].append(stat[i][key])
-			
-			for key in raw_data.keys():
+
+			for key in agg_stats[0][0].keys():
 				raw_data[key].append(np.mean(values[key]))
 				raw_data_err[key].append(np.std(values[key])/np.sqrt(num_point))
 
 		
 		x = range(self.il_config['num_iters'])
+		
 		plt.errorbar(x,raw_data['reward_sup'],yerr=raw_data_err['reward_sup'], label= 'R.S.' )
 		plt.errorbar(x,raw_data['reward_robot'],yerr=raw_data_err['reward_robot'],label = 'R.R.' )
 		plt.legend()
@@ -186,6 +170,20 @@ class Plotter():
 
 		plt.savefig(self.file_path+'/plots/generalization.png')
 		plt.clf()
+
+
+		if self.il_config["measure_est_stats"]:
+			plt.errorbar(x,raw_data['bias'],yerr=raw_data_err['bias'],label = 'L.S.' )
+			plt.legend()
+			plt.savefig(self.file_path+'/plots/bias.png')
+			plt.clf()
+
+
+			plt.errorbar(x,raw_data['variance'],yerr=raw_data_err['variance'],label = 'T.S.' )
+			plt.legend()
+			plt.savefig(self.file_path+'/plots/variance.png')
+			plt.clf()
+			
 
 		np.save(self.file_path+'/plots/raw_data',raw_data)
 

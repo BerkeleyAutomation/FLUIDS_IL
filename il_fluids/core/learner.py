@@ -9,6 +9,7 @@ from gym_urbandriving.actions import VelocityAction
 from gym_urbandriving.actions import SteeringAction
 from il_fluids.utils.losses import loss
 import _pickle as pickle
+from copy import deepcopy
 
 from sklearn.preprocessing import StandardScaler
 
@@ -114,6 +115,69 @@ class Learner():
 			#pickle.dump(self.model,open(model_file_path,'w'))
 			self.iter_count += 1
 		
+
+
+
+	def sample_model(self):
+
+		num_data = len(self.X_train)
+		model_sample = deepcopy(self.model)
+		indices = np.random.randint(num_data, size=int(num_data*0.8))
+		
+		x_train = [self.X_train[i] for i in list(indices)]
+		y_train = [self.Y_train[i] for i in list(indices)]
+		model_sample.fit(x_train,y_train) 
+		return model_sample
+
+	def compute_bias_variance(self):
+
+		mean_preds = [[]]
+
+		bias = 0.0
+		cov_avg = np.zeros([2,2])
+		variance = 0.0
+
+		for i in range(self.il_config['est_samples']):
+			model = self.sample_model()
+			for j in range(len(self.X_test)):
+
+				x = np.array([self.X_test[j]])
+
+				y_ = model.predict(x)
+
+				if i == 0:
+					mean_preds.append([y_[0]])
+				else:
+					mean_preds[j].append(y_[0])
+
+		del mean_preds[-1]
+
+		for i in range(len(mean_preds)):
+
+			########COMPUTE MEAN########
+			samples = np.array(mean_preds[i])
+
+			y = self.Y_train[i]
+			mean = np.mean(samples,axis=0)
+			err = loss(self.il_config['loss_type'],y,mean[0])
+
+			bias += err
+
+			####COMPUTE COVARIANCE MATRIX #######
+			
+			cov = np.cov(samples.T)
+			# if i == len(mean_preds)-1:
+			# 	IPython.embed()
+
+			cov_avg += cov
+
+		print(cov_avg)
+
+		cov_avg = cov_avg/len(self.X_test)
+		bias = bias/len(self.X_test)
+
+		return bias,np.trace(cov_avg),cov_avg
+
 
 
 	def get_train_error(self):
