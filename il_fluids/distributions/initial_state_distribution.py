@@ -27,6 +27,7 @@ class InitialState:
 
         supervisor_class = {'VelocitySupervisor':VelocitySupervisor, 
                             'SteeringSupervisor':SteeringSupervisor,
+                            "VelocityCSPSupervisor":VelocityCSPSupervisor,
                             'VelocityNeuralSupervisor':VelocityNeuralSupervisor}[supervisor_type]
 
 

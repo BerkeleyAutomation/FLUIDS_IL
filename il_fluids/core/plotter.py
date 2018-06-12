@@ -88,11 +88,11 @@ class Plotter():
 		raw_data = self.get_statistics(stats)
 
 
-		if self.il_config:
-			if self.il_config['action'] == 'velocity':
-				self.save_matrix(stats)
-		else:
-			self.save_matrix(stats)
+		# if self.il_config:
+		# 	if self.il_config['action'] == 'velocity':
+		# 		self.save_matrix(stats)
+		# else:
+		# 	self.save_matrix(stats)
 
 		
 		plt.plot(raw_data['reward_sup'],label = 'R.S.' )

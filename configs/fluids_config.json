@@ -1,7 +1,8 @@
 {   
+
     "environment":{
         "state": "four_way_intersection",
-        "visualize": false,
+        "visualize": true,
         "visualize_lidar": false,
         "max_time":500
     },
@@ -12,22 +13,21 @@
         "action_space":"velocity",
         "state_space":"Q-LIDAR",
         "state_space_config":{
-            "goal_position":false
+            "goal_position":false,
+            "noise":0,
+            "omission_prob":0
+        },
+        "bg_state_space_config":{
+            "noise":0,
+            "omission_prob":0
         },
         "use_traffic_lights":true,
-        "use_pedestrians":false,
-        "number_of_pedestrians":4,
+        "number_of_pedestrians":0,
         "agent_mappings":{
-            "Car":"PlanningPursuitAgent",
+            "Car":"CSPPursuitAgent",
             "TrafficLight":"TrafficLightAgent",
             "CrosswalkLight":"CrosswalkLightAgent",
             "Pedestrian":"PedestrianAgent"
         }
-    },
-
-    "recorded_data":{
-        "action_space":"steering",
-        "state_space":"Q-LIDAR",
-        "all_cars":false
     }
 }
