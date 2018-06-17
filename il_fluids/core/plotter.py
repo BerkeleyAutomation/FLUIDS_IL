@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 from il_fluids.utils.confusion_matrix import create_matrix
+from il_fluids.utils.sensitivity_plot import get_sensitivity_analysis
 from copy import deepcopy
 plt.style.use('fivethirtyeight')
 
@@ -73,6 +74,8 @@ class Plotter():
 		return raw_data
 
 
+	def save_sensitivity(self):
+		get_sensitivity_analysis(self.file_path)
 
 
 	def save_plots(self,stats):
@@ -127,7 +130,7 @@ class Plotter():
 			plt.savefig(self.file_path+'/plots/variance.png')
 			plt.clf()
 			
-
+		
 		np.save(self.file_path+'/plots/raw_data',raw_data)
 
 	def save_agg_plots(self,agg_stats):

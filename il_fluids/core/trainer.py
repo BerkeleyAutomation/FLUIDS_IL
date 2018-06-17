@@ -12,6 +12,7 @@ from il_fluids.core import Learner
 from il_fluids.distributions import InitialState
 from il_fluids.data_protocols import BehaviorCloning
 from il_fluids.core  import Plotter
+from copy import deepcopy
 
 
 
@@ -28,7 +29,7 @@ class Trainer:
 
         self.il_learn = Learner(il_config)
 
-        self.initial_state = InitialState(fluids_config,il_config)
+        self.initial_state = InitialState(deepcopy(fluids_config),il_config)
 
         self.protocol = BehaviorCloning()
         self.use_tracker = False
@@ -80,10 +81,13 @@ class Trainer:
 
     def reset_trial(self,extend):
 
-        file_path = self.il_config['file_path']+self.il_config['experiment_name'] + extend
-        self.plotter = Plotter(file_path,self.il_config)
-        self.d_logger = DataLogger(file_path)
+        self.file_path = self.il_config['file_path']+self.il_config['experiment_name'] + extend
+        self.plotter = Plotter(self.file_path,self.il_config)
+        self.d_logger = DataLogger(self.file_path)
         self.il_learn = Learner(self.il_config,extend)
+        self.initial_state = InitialState(deepcopy(self.fluids_config),self.il_config)
+
+        
 
 
     def train_robot(self):
@@ -109,6 +113,8 @@ class Trainer:
                 #Save plots
                 self.plotter.save_plots(stats)
 
+            self.collect_sensitivity_analysis()
+            self.plotter.save_sensitivity()
             self.reset_trial('/agg')
             agg_stats.append(stats)
             self.plotter.save_agg_plots(agg_stats)
@@ -281,6 +287,38 @@ class Trainer:
             evaluations.append(rollout)
             
         return evaluations
+
+    def collect_sensitivity_analysis(self):
+        """
+        Collects a number of policy rollouts and measures success
+
+        Returns
+        ----------
+        The evaulations and the reported success rate
+        """
+     
+        evaluations = []
+        
+        
+
+        for j in range(self.il_config['num_sensitivity_samples']):
+
+            f = open(self.file_path+"/sensitivity_out.txt", "a+")
+            self.initial_state.sample_test_enviroment(f)
+            
+            for i in range(self.il_config['num_policy_rollouts']):
+
+                #GENERATE 
+
+                rollout  = self.rollout_policy()
+     
+                evaluations.append(rollout)
+
+            loss_robot,c_matrix = self.il_learn.get_cs(evaluations)
+            f.write(str(loss_robot) + '\n')
+            f.close()
+                
+        return 
 
     def collect_supervisor_rollouts(self):
         """

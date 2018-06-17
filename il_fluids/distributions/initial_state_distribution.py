@@ -1,5 +1,6 @@
 import gym_urbandriving as fluids
 from gym_urbandriving.agents import *
+from copy import deepcopy
 import numpy as np
 
 class InitialState:
@@ -38,4 +39,20 @@ class InitialState:
         return supervisors
 
 
+    def sample_test_enviroment(self,f):
+
+        self.fluids_config['agents']['background_cars'] = np.random.randint(0, 3)
+        self.fluids_config['agents']['use_traffic_lights'] = np.random.random() < 0.5
+        self.fluids_config['agents']['use_pedestrians'] = True
+        self.fluids_config['agents']['number_of_pedestrians'] = np.random.randint(0, 6)
+        self.fluids_config['agents']['bg_state_space_config']['noise'] = np.random.random()
+        self.fluids_config['agents']['bg_state_space_config']['omission_prob'] = np.random.random()
+
+        f.write(str(self.fluids_config['agents']['background_cars']) + ",")
+        f.write(str(int(self.fluids_config['agents']['use_traffic_lights'])) + ",")
+        f.write(str(int(self.fluids_config['agents']['use_pedestrians'])) + ",")
+        f.write(str(self.fluids_config['agents']['number_of_pedestrians']) + ",")
+        f.write(str(self.fluids_config['agents']['bg_state_space_config']['noise']) + ",")
+        f.write(str(self.fluids_config['agents']['bg_state_space_config']['omission_prob']) + ",")
+        
 
