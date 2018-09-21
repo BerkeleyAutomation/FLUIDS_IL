@@ -1,3 +1,3 @@
 [submodule "Urban_Driving_Simulator"]
 	path = Urban_Driving_Simulator
-	url = ./Urban_Driving_Simulator/
+	url = https://github.com/BerkeleyAutomation/Urban_Driving_Simulator.git
