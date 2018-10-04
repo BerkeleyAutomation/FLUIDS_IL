@@ -1,7 +1,8 @@
 import numpy as np
 import os
 
-# import fluids
+import fluids
+from fluids.obs import grid
 
 """
 1. Scan through demonstrations in UDS/data folder
@@ -9,21 +10,27 @@ import os
 3. Specific criteria?
 """
 
-path = "../../Urban_Driving_Simulator/fluids/data"
-print(path)
+#path = "../Urban_Driving_Simulator/fluids/data"
+root = os.getenv("HOME") + "/../../nfs/diskstation/projects/fluids_dataset"
+path = root + "/fluids_data_20180926_123838"
+#print(path)
 
 for root, dirs, files in os.walk(path, topdown=False):
     for name in files:
         n = os.path.join(root, name)
         print(n)
-        # f = open(n, 'rb')
-        # print(f)
         npz = np.load(n)
-        print(npz)
-        data = npz['arr_0']
-        print(len(data))
-        time = data['time']
-        key = data['key']
-        observations = data['fluids.OBS_GRID']
-        actions = data['fluids.VelocityAction']
+        array = npz['arr_0']
+        obs1 = array[0][fluids.OBS_GRID][:, :, :, :4]
+        obs2 = array[0][fluids.OBS_GRID][:, :, :, 8:]
+        obs = np.concatenate((obs1, obs2), axis=3)
+        print("Observation shape: {}".format(obs.shape))
+        for i in range(obs.shape[3]):
+            channel = obs[:, :, :, i]
+            print("Channel : {}".format(i))
+            print(channel)
+        acts = array[0][fluids.VelocityAction]
+        print("Action shape: {}".format(acts.shape))
+        print(acts)
+
 
