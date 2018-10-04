@@ -20,5 +20,10 @@ for root, dirs, files in os.walk(path, topdown=False):
         # print(f)
         npz = np.load(n)
         print(npz)
-        array = npz['arr_0']
-        print(len(array))
+        data = npz['arr_0']
+        print(len(data))
+        time = data['time']
+        key = data['key']
+        observations = data['fluids.OBS_GRID']
+        actions = data['fluids.VelocityAction']
+
