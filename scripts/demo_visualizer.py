@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
 import fluids
 from fluids.obs import grid
@@ -28,7 +29,8 @@ for root, dirs, files in os.walk(path, topdown=False):
         for i in range(obs.shape[3]):
             channel = obs[:, :, :, i]
             print("Channel : {}".format(i))
-            print(channel)
+            #print(channel)
+            plt.imshow(channel)
         acts = array[0][fluids.VelocityAction]
         print("Action shape: {}".format(acts.shape))
         print(acts)
