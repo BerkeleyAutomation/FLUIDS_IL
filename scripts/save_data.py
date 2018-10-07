@@ -13,7 +13,7 @@ data_root = "/nfs/diskstation/projects/fluids_dataset"
 time_str = datetime.datetime.today().strftime('%Y-%m-%d')
 
 # Fill out these fields
-desc_str    = "test_dataset1"   # Descriptive string for organizing saved data
+desc_str    = "behavior_cloning"   # Descriptive string for organizing saved data
 n_cars      = 10   # Number of cars to collect observations over
 n_peds      = 0   # Number of peds to collect observatoins over
 car_lights  = False   # True/False place traffic lights
@@ -22,7 +22,7 @@ layout      = fluids.STATE_CITY   # Fluids Layout, fluids.STATE_CITY is one
 obs_type    = fluids.OBS_GRID   # Observation type fluids.OBS_GRID or fluids.OBS_BIRDSEYE
 obs_args    = {"obs_dim":500, "shape":(80, 80)}   # **kwargs dictionary of arguments for observation construction
 action_type = fluids.VelocityAction   # Action type, fluids.VelocityAction, fluids.SteeringAccAction, etc.
-batch_size  = 10
+batch_size  = 100
 end_time    = 100
 make_dir    = True
 
@@ -77,8 +77,9 @@ simulator.set_state(state)
 data_saver = fluids.DataSaver(fluid_sim=simulator,
                               file=os.path.join(folder_name, "training_data"),
                               obs=[obs_type], #TODO: Make obs_args work
-                              act=[action_type]
-                              batch_size=batch_size)
+                              act=[action_type],
+                              batch_size=batch_size,
+                              obs_kwargs=obs_args)
 
 simulator.set_data_saver(data_saver)
 
