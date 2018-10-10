@@ -13,7 +13,7 @@ data_root = "/nfs/diskstation/projects/fluids_dataset"
 time_str = datetime.datetime.today().strftime('%Y-%m-%d')
 
 # Fill out these fields
-desc_str    = "behavior_cloning"   # Descriptive string for organizing saved data
+desc_str    = "behavior_cloning_obs_dim_500"   # Descriptive string for organizing saved data
 n_cars      = 10   # Number of cars to collect observations over
 n_peds      = 0   # Number of peds to collect observatoins over
 car_lights  = False   # True/False place traffic lights
@@ -23,7 +23,7 @@ obs_type    = fluids.OBS_GRID   # Observation type fluids.OBS_GRID or fluids.OBS
 obs_args    = {"obs_dim":500, "shape":(80, 80)}   # **kwargs dictionary of arguments for observation construction
 action_type = fluids.VelocityAction   # Action type, fluids.VelocityAction, fluids.SteeringAccAction, etc.
 batch_size  = 100
-end_time    = 100
+end_time    = 10000
 make_dir    = True
 
 # desc_str    = "test_dataset1"
