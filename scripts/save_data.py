@@ -12,6 +12,7 @@ data_root = "/nfs/diskstation/projects/fluids_dataset"
 
 time_str = datetime.datetime.today().strftime('%Y-%m-%d')
 
+#TODO: split into batches everytime state is reinitialized
 # Fill out these fields
 desc_str    = "behavior_cloning_obs_dim_500"   # Descriptive string for organizing saved data
 n_cars      = 10   # Number of cars to collect observations over
