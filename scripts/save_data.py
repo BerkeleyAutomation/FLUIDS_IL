@@ -13,18 +13,19 @@ data_root = "/nfs/diskstation/projects/fluids_dataset"
 time_str = datetime.datetime.today().strftime('%Y-%m-%d')
 
 # Fill out these fields
-desc_str    = "test_dataset2"   # Descriptive string for organizing saved data
-n_cars      = 10   # Number of cars to collect observations over
-n_peds      = 0   # Number of peds to collect observatoins over
+desc_str    = "chauffeur_data_1"   # Descriptive string for organizing saved data
+n_cars      = 4   # Number of cars to collect observations over
+n_peds      = 3   # Number of peds to collect observatoins over
+c_cars      = 1
 car_lights  = False   # True/False place traffic lights
 ped_lights  = False   # True/False place ped crossing lights
 layout      = fluids.STATE_CITY   # Fluids Layout, fluids.STATE_CITY is one
-obs_type    = fluids.OBS_GRID   # Observation type fluids.OBS_GRID or fluids.OBS_BIRDSEYE
-obs_args    = {"obs_dim":500, "shape":(80, 80)}   # **kwargs dictionary of arguments for observation construction
-action_type = fluids.actions.VelocityAction   # Action type, fluids.VelocityAction, fluids.SteeringAccAction, etc.
-batch_size  = 10
+obs_type    = fluids.OBS_CHAUFFEUR# Observation type fluids.OBS_GRID or fluids.OBS_BIRDSEYE
+obs_args    = {"obs_dim":500, "shape":(100, 100), "history": 10}   # **kwargs dictionary of arguments for observation construction
+action_type = fluids.actions.WaypointVelAction # Action type, fluids.VelocityAction, fluids.SteeringAccAction, etc.
+batch_size  = 100
 end_time    = 100
-make_dir    = False
+make_dir    = True
 
 # desc_str    = "test_dataset1"
 # n_cars      = 10
@@ -69,15 +70,19 @@ simulator = fluids.FluidSim(visualization_level=0,
 state = fluids.State(layout=layout,
                      background_cars=n_cars,
                      background_peds=n_peds,
-                     controlled_cars=0,
+                     controlled_cars=c_cars,
                      use_traffic_lights=car_lights,
                      use_ped_lights=ped_lights)
 simulator.set_state(state)
 
+obs =  {"obs_chauffeur": (obs_type, obs_args)}
+act = {"waypointvel": action_type}
+car_keys = [list(simulator.state.background_cars.keys())[0]]
 data_saver = fluids.DataSaver(fluid_sim=simulator,
-                              file=os.path.join(folder_name, "training_data"),
-                              obs=[obs_type], #TODO: Make obs_args work
-                              act=[action_type],
+                              file_path=os.path.join(folder_name, "training_data"),
+                              obs=obs, #TODO: Make obs_args work
+                              act=act,
+                              keys=car_keys,
                               batch_size=batch_size)
 
 simulator.set_data_saver(data_saver)
@@ -88,14 +93,16 @@ while not end_time or t < end_time:
     print(t)
     simulator.step()
     simulator.render()
-    if simulator.in_deadlock():
-        state = fluids.State(layout=layout,
-                     background_cars=n_cars,
-                     background_peds=n_peds,
-                     controlled_cars=0,
-                     use_traffic_lights=car_lights,
-                     use_ped_lights=ped_lights)
-        simulator.set_state(state)
+    for k in car_keys:
+        if simulator.agent_in_deadlock(k):
+            state = fluids.State(layout=layout,
+                         background_cars=n_cars,
+                         background_peds=n_peds,
+                         controlled_cars=c_cars,
+                         use_traffic_lights=car_lights,
+                         use_ped_lights=ped_lights)
+            data_saver.set_keys([list(state.background_cars.keys())[0]])
+            simulator.set_state(state)
 
     t = t + 1
 
