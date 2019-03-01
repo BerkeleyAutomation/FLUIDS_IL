@@ -13,18 +13,18 @@ data_root = "/nfs/diskstation/projects/fluids_dataset"
 time_str = datetime.datetime.today().strftime('%Y-%m-%d')
 
 # Fill out these fields
-desc_str    = "chauffeur_data_1"   # Descriptive string for organizing saved data
-n_cars      = 4   # Number of cars to collect observations over
-n_peds      = 3   # Number of peds to collect observatoins over
-c_cars      = 1
+desc_str    = "chauffeur_data_velsteer_waypointvel_working_reset_4"   # Descriptive string for organizing saved data
+n_cars      = 5   # Number of cars to collect observations over
+n_peds      = 5   # Number of peds to collect observatoins over
+c_cars      = 0
 car_lights  = False   # True/False place traffic lights
 ped_lights  = False   # True/False place ped crossing lights
 layout      = fluids.STATE_CITY   # Fluids Layout, fluids.STATE_CITY is one
 obs_type    = fluids.OBS_CHAUFFEUR# Observation type fluids.OBS_GRID or fluids.OBS_BIRDSEYE
 obs_args    = {"obs_dim":500, "shape":(100, 100), "history": 10}   # **kwargs dictionary of arguments for observation construction
 action_type = fluids.actions.WaypointVelAction # Action type, fluids.VelocityAction, fluids.SteeringAccAction, etc.
-batch_size  = 100
-end_time    = 100
+batch_size  = 5000
+end_time    = 100000000
 make_dir    = True
 
 # desc_str    = "test_dataset1"
@@ -76,7 +76,7 @@ state = fluids.State(layout=layout,
 simulator.set_state(state)
 
 obs =  {"obs_chauffeur": (obs_type, obs_args)}
-act = {"waypointvel": action_type}
+act = {"waypointvel": action_type, "velsteer": fluids.actions.SteeringVelAction}
 car_keys = [list(simulator.state.background_cars.keys())[0]]
 data_saver = fluids.DataSaver(fluid_sim=simulator,
                               file_path=os.path.join(folder_name, "training_data"),
@@ -90,19 +90,22 @@ simulator.set_data_saver(data_saver)
 t = 0
 curr = time.time()
 while not end_time or t < end_time:
-    print(t)
+    if t % 1000 == 0: print(t)
     simulator.step()
     simulator.render()
     for k in car_keys:
         if simulator.agent_in_deadlock(k):
+            print("Deadlock found. Resetting state")
             state = fluids.State(layout=layout,
                          background_cars=n_cars,
                          background_peds=n_peds,
                          controlled_cars=c_cars,
                          use_traffic_lights=car_lights,
                          use_ped_lights=ped_lights)
-            data_saver.set_keys([list(state.background_cars.keys())[0]])
             simulator.set_state(state)
+            car_keys = [list(state.background_cars.keys())[0]]
+            data_saver.set_keys(car_keys)
+            break
 
     t = t + 1
 
