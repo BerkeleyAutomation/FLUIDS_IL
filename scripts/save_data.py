@@ -7,7 +7,8 @@ import shutil
 
 
 # Don't change this if you are working on AUTOLAB machine
-data_root = "/nfs/diskstation/projects/fluids_dataset"
+#data_root = "/nfs/diskstation/projects/fluids_dataset"
+data_root = '/Users/ragz/fluids_results/'
 
 
 time_str = datetime.datetime.today().strftime('%Y-%m-%d')
@@ -23,7 +24,7 @@ layout      = fluids.STATE_CITY   # Fluids Layout, fluids.STATE_CITY is one
 obs_type    = fluids.OBS_CHAUFFEUR# Observation type fluids.OBS_GRID or fluids.OBS_BIRDSEYE
 obs_args    = {"obs_dim":500, "shape":(100, 100), "history": 10}   # **kwargs dictionary of arguments for observation construction
 action_type = fluids.actions.WaypointVelAction # Action type, fluids.VelocityAction, fluids.SteeringAccAction, etc.
-batch_size  = 5000
+batch_size  = 10
 end_time    = 100000000
 make_dir    = True
 
@@ -64,7 +65,7 @@ except FileExistsError:
 
 
 
-simulator = fluids.FluidSim(visualization_level=0,
+simulator = fluids.FluidSim(visualization_level=100,
                             background_control=fluids.BACKGROUND_CSP)
 
 state = fluids.State(layout=layout,
